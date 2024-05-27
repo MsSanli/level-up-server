@@ -73,7 +73,11 @@ class EventView(ViewSet):
 
         # Return a 204 No Content response to indicate success
         return Response(None, status=status.HTTP_204_NO_CONTENT)
-
+    
+    def destroy(self, request, pk):
+        event = Event.objects.get(pk=pk)
+        event.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for events
