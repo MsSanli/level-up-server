@@ -44,7 +44,7 @@ class GameView(ViewSet):
 
       game = Game.objects.create(
           title=request.data["title"],
-          make=request.data["maker"],
+          make=request.data["make"],
           number_of_players=request.data["numberOfPlayers"],
           skill_level=request.data["skillLevel"],
           game_type=game_type,
@@ -62,7 +62,7 @@ class GameView(ViewSet):
 
         game = Game.objects.get(pk=pk)
         game.title = request.data["title"]
-        game.make = request.data["maker"]
+        game.make = request.data["make"]
         game.number_of_players = request.data["numberOfPlayers"]
         game.skill_level = request.data["skillLevel"]
 
