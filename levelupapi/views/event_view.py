@@ -3,7 +3,9 @@ from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
+from rest_framework.decorators import action
 from levelupapi.models import Event, Game, Gamer
+from levelupapi.models.event_gamer import EventGamer
 
 
 class EventView(ViewSet):
@@ -78,6 +80,37 @@ class EventView(ViewSet):
         event = Event.objects.get(pk=pk)
         event.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    # @action(methods=['post'], detail=True)
+    # def signup(self, request, pk):
+    #     """Post request for a user to sign up for an event"""
+
+    #     gamer = Gamer.objects.get(user=request.data["userId"])
+    #     event = Event.objects.get(pk=pk)
+    #     attendee = EventGamer.objects.create(
+    #         gamer=gamer,
+    #         event=event
+    #     )
+    #     return Response({'message': 'Gamer added'}, status=status.HTTP_201_CREATED)
+    
+    @action(methods=['post'], detail=True)
+    def signup(self, request, pk):
+        """Post request for a user to sign up for an event"""
+
+        try:
+            gamer = Gamer.objects.get(uid=request.data["uid"])  # Use 'uid' instead of 'userId'
+            event = Event.objects.get(pk=pk)
+            attendee = EventGamer.objects.create(
+                gamer=gamer,
+                event=event
+            )
+            return Response({'message': 'Gamer added'}, status=status.HTTP_201_CREATED)
+        except Gamer.DoesNotExist:
+            return Response({'error': 'Gamer not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Event.DoesNotExist:
+            return Response({'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for events
